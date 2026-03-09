@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>DA Site Login</title>
+    <title>hlx Site Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="icon" href="data:,">
     <style>
@@ -19,16 +19,8 @@
       .message { margin-top: 1rem; padding: 0.75rem 1rem; border-radius: 4px; font-size: 0.875rem; }
       .message.success { background: #e6f4ea; color: #1e7e34; }
       .message.error { background: #fce8e6; color: #c5221f; }
-      .message.loading { background: #e8f4fd; color: #0d66d0; }
-      .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1000; align-items: center; justify-content: center; padding: 2rem; }
-      .modal-overlay.open { display: flex; }
-      .modal { background: #fff; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.15); overflow: hidden; width: 100%; max-width: 480px; max-height: 90vh; }
-      .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid #e1e1e1; background: #fafafa; }
-      .modal-header h2 { margin: 0; font-size: 1rem; font-weight: 600; color: #292929; }
-      .modal-close { background: none; border: none; padding: 0.25rem; cursor: pointer; font-size: 1.25rem; line-height: 1; color: #737373; }
-      .modal-close:hover { color: #292929; }
-      .modal-body { padding: 0; }
-      .modal-body iframe { display: block; width: 100%; height: 70vh; min-height: 400px; border: none; }
+      .message a { color: #1e7e34; font-weight: 600; }
+      .message a:hover { text-decoration: underline; }
     </style>
   </head>
   <body>
@@ -82,25 +74,9 @@
       <div id="message" class="message" style="display: none;" role="status"></div>
     </div>
 
-    <div id="modal-overlay" class="modal-overlay" aria-hidden="true">
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <div class="modal-header">
-          <h2 id="modal-title">Login</h2>
-          <button type="button" class="modal-close" id="modal-close" aria-label="Close">&times;</button>
-        </div>
-        <div class="modal-body">
-          <iframe id="login-iframe" title="Login"></iframe>
-        </div>
-      </div>
-    </div>
-
     <script>
       const form = document.getElementById('site-login-form');
       const messageEl = document.getElementById('message');
-      const loginBtn = document.getElementById('login-btn');
-      const modalOverlay = document.getElementById('modal-overlay');
-      const loginIframe = document.getElementById('login-iframe');
-      const modalClose = document.getElementById('modal-close');
 
       function showMessage(text, type = 'success') {
         messageEl.textContent = text;
@@ -112,34 +88,16 @@
         messageEl.style.display = 'none';
       }
 
-      function openModal(url) {
-        loginIframe.src = url;
-        modalOverlay.classList.add('open');
-        modalOverlay.setAttribute('aria-hidden', 'false');
-      }
-
-      function closeModal() {
-        loginIframe.src = 'about:blank';
-        modalOverlay.classList.remove('open');
-        modalOverlay.setAttribute('aria-hidden', 'true');
-      }
+      let pendingOrg = '';
+      let pendingSite = '';
 
       function onLoginSuccess() {
-        closeModal();
         form.style.display = 'none';
-        showMessage('Login succeeded');
+        const rootUrl = `https://main--${pendingSite}--${pendingOrg}.aem.page`;
+        messageEl.innerHTML = `Login succeeded<br><a href="${rootUrl}" target="_blank" rel="noopener">main--${pendingSite}--${pendingOrg}.aem.page</a>`;
+        messageEl.className = 'message success';
+        messageEl.style.display = 'block';
       }
-
-      modalClose.addEventListener('click', closeModal);
-      modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) closeModal();
-      });
-
-      window.addEventListener('message', (e) => {
-        if (e.data?.type === 'hlx-login-success' || e.data?.loginSuccess) {
-          onLoginSuccess();
-        }
-      });
 
       form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -150,9 +108,28 @@
         const [org, site] = value.split('/');
         if (!org || !site) return;
 
-        const loginUrl = `https://admin.hlx.page/login/${org}/${site}/main`;
+        pendingOrg = org;
+        pendingSite = site;
+
+        const loginUrl = `https://admin.hlx.page/login/${org}/${site}/main?extensionId=cookie`;
         hideMessage();
-        openModal(loginUrl);
+
+        const popup = window.open(
+          loginUrl,
+          'hlx-login',
+          'width=520,height=640,scrollbars=yes,resizable=yes'
+        );
+
+        if (popup) {
+          const checkClosed = setInterval(() => {
+            if (popup.closed) {
+              clearInterval(checkClosed);
+              onLoginSuccess();
+            }
+          }, 300);
+        } else {
+          window.location.href = loginUrl;
+        }
       });
     </script>
   </body>
