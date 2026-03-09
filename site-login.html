@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>DA Site Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="data:,">
+    <style>
+      * { box-sizing: border-box; }
+      body { font-family: "Adobe Clean", adobe-clean, "Trebuchet MS", sans-serif; margin: 0; padding: 2rem; background: #f7f7f7; }
+      .page { max-width: 480px; margin: 0 auto; background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+      h1 { font-size: 1.5rem; margin: 0 0 0.5rem; color: #292929; }
+      p { color: #505050; margin: 0 0 1.5rem; font-size: 0.875rem; }
+      .form-group { margin-bottom: 1rem; }
+      label { display: block; font-weight: 600; margin-bottom: 0.25rem; font-size: 0.875rem; color: #292929; }
+      select { width: 100%; padding: 0.5rem 0.75rem; font-size: 1rem; border: 1px solid #e1e1e1; border-radius: 4px; background: #fff; }
+      button { padding: 0.5rem 1.25rem; font-size: 1rem; background: #3b63fb; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-family: inherit; }
+      button:hover { background: #274dea; }
+      .hint { font-size: 0.75rem; color: #737373; margin-top: 0.25rem; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1>Static Site Login</h1>
+      <p>Select a site to login to. You will be redirected to the login for that org/site.</p>
+
+      <form id="site-login-form" method="get" action="">
+        <div class="form-group">
+          <label for="site-select">Site</label>
+          <select id="site-select" name="site" required>
+            <option value="">-- Select a site --</option>
+            <option value="volvogroup/macktrucks-bs">macktrucks-bs</option>
+            <option value="volvogroup/macktrucks-ca">macktrucks-ca</option>
+            <option value="volvogroup/macktrucks-cl">macktrucks-cl</option>
+            <option value="volvogroup/macktrucks-co-nz">macktrucks-co-nz</option>
+            <option value="volvogroup/macktrucks-com-ar">macktrucks-com-ar</option>
+            <option value="volvogroup/macktrucks-com-au">macktrucks-com-au</option>
+            <option value="volvogroup/macktrucks-com-bo">macktrucks-com-bo</option>
+            <option value="volvogroup/macktrucks-com-co">macktrucks-com-co</option>
+            <option value="volvogroup/macktrucks-com-do">macktrucks-com-do</option>
+            <option value="volvogroup/macktrucks-com-ec">macktrucks-com-ec</option>
+            <option value="volvogroup/macktrucks-com-emea">macktrucks-com-emea</option>
+            <option value="volvogroup/macktrucks-com-gy">macktrucks-com-gy</option>
+            <option value="volvogroup/macktrucks-com-museum">macktrucks-com-museum</option>
+            <option value="volvogroup/macktrucks-com-mx">macktrucks-com-mx</option>
+            <option value="volvogroup/macktrucks-com-ng">macktrucks-com-ng</option>
+            <option value="volvogroup/macktrucks-com-ni">macktrucks-com-ni</option>
+            <option value="volvogroup/macktrucks-com-pa">macktrucks-com-pa</option>
+            <option value="volvogroup/macktrucks-com-pe">macktrucks-com-pe</option>
+            <option value="volvogroup/macktrucks-com-ve">macktrucks-com-ve</option>
+            <option value="volvogroup/macktrucks-cr">macktrucks-cr</option>
+            <option value="volvogroup/macktrucks-gt">macktrucks-gt</option>
+            <option value="volvogroup/macktrucks-hn">macktrucks-hn</option>
+            <option value="volvogroup/macktrucks-ht">macktrucks-ht</option>
+            <option value="volvogroup/macktrucks-sv">macktrucks-sv</option>
+            <option value="volvogroup/macktrucks-tt">macktrucks-tt</option>
+            <option value="volvogroup/roadchoice-ca">roadchoice-ca</option>
+            <option value="volvogroup/roadchoice-mx">roadchoice-mx</option>
+            <option value="volvogroup/vg-macktrucks-com">vg-macktrucks-com</option>
+            <option value="volvogroup/vg-partsasist">vg-partsasist</option>
+            <option value="volvogroup/vg-roadchoice-com">vg-roadchoice-com</option>
+            <option value="volvogroup/volvotrucks-ca">volvotrucks-ca</option>
+            <option value="volvogroup/volvotrucks-mx">volvotrucks-mx</option>
+            <option value="volvogroup/volvotrucks-us">volvotrucks-us</option>
+          </select>
+          <p class="hint">Format: org/site</p>
+        </div>
+        <button type="submit">Login to Site</button>
+      </form>
+    </div>
+
+    <script>
+      document.getElementById('site-login-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const select = document.getElementById('site-select');
+        const value = select?.value?.trim();
+        if (!value) return;
+        const [org, site] = value.split('/');
+        if (org && site) {
+          window.location.href = `https://admin.hlx.page/login/${org}/${site}/main`;
+        }
+      });
+    </script>
+  </body>
+</html>
